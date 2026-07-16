@@ -428,7 +428,8 @@ h3 {
 
 .mission,
 .food,
-.contact {
+.contact,
+.transparency {
   background: var(--soft);
 }
 
@@ -782,7 +783,10 @@ h3 {
 }
 
 .contact-form input,
-.contact-form textarea {
+.contact-form textarea,
+.transparency-form input,
+.transparency-form select,
+.transparency-form textarea {
   border: 1px solid var(--line);
   border-radius: var(--radius);
   display: block;
@@ -795,9 +799,73 @@ h3 {
 }
 
 .contact-form input:focus,
-.contact-form textarea:focus {
+.contact-form textarea:focus,
+.transparency-form input:focus,
+.transparency-form select:focus,
+.transparency-form textarea:focus {
   border-color: var(--blue);
   box-shadow: 0 0 0 4px rgba(0, 151, 215, 0.14);
+}
+
+.transparency-grid {
+  display: grid;
+  gap: 24px;
+  grid-template-columns: 0.9fr 1.1fr;
+}
+
+.transparency-form,
+.transparency-panel {
+  background: var(--white);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  box-shadow: 0 16px 44px rgba(23, 50, 77, 0.08);
+  padding: 28px;
+}
+
+.transparency-form {
+  display: grid;
+  gap: 16px;
+  grid-template-columns: repeat(2, 1fr);
+}
+
+.transparency-form label {
+  color: var(--ink);
+  font-weight: 900;
+}
+
+.transparency-form .wide-field,
+.transparency-form button {
+  grid-column: 1 / -1;
+}
+
+.table-wrap {
+  overflow-x: auto;
+}
+
+.transparency-panel table {
+  border-collapse: collapse;
+  min-width: 620px;
+  width: 100%;
+}
+
+.transparency-panel th,
+.transparency-panel td {
+  border-bottom: 1px solid var(--line);
+  padding: 14px 12px;
+  text-align: left;
+  vertical-align: top;
+}
+
+.transparency-panel th {
+  color: var(--blue-dark);
+  font-family: "Poppins", sans-serif;
+  font-size: 0.86rem;
+}
+
+.transparency-note {
+  color: var(--muted);
+  font-size: 0.94rem;
+  margin-top: 18px;
 }
 
 .map-card {
@@ -951,6 +1019,7 @@ h3 {
   .split,
   .about-grid,
   .contact-grid,
+  .transparency-grid,
   .food-showcase {
     grid-template-columns: 1fr;
   }
@@ -1043,7 +1112,8 @@ h3 {
   .impact-grid,
   .workshop-grid,
   .gallery-grid,
-  .pix-area {
+  .pix-area,
+  .transparency-form {
     grid-template-columns: 1fr;
   }
 

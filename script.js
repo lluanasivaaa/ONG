@@ -4,6 +4,9 @@ const backToTop = document.querySelector(".back-to-top");
 const fadeElements = document.querySelectorAll(".fade-in");
 const copyPixButton = document.querySelector(".copy-pix");
 const contactButton = document.querySelector(".contact-form button");
+const transparencyForm = document.querySelector(".transparency-form");
+const transparencyTable = document.querySelector("#transparency-table");
+const transparencyStorageKey = "ong-transparency-records";
 
 // Controla o menu hamburguer no mobile.
 menuToggle.addEventListener("click", () => {
@@ -73,4 +76,83 @@ if (contactButton) {
   contactButton.addEventListener("click", () => {
     alert("Formulário demonstrativo. Entre em contato pelo WhatsApp para falar com a ONG.");
   });
+}
+
+const formatCurrency = (value) => {
+  const digits = value.replace(/\D/g, "");
+  const amount = Number(digits || 0) / 100;
+
+  return amount.toLocaleString("pt-BR", {
+    currency: "BRL",
+    style: "currency",
+  });
+};
+
+const escapeHtml = (value) =>
+  String(value)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+
+const getTransparencyRecords = () => {
+  try {
+    return JSON.parse(localStorage.getItem(transparencyStorageKey)) || [];
+  } catch {
+    return [];
+  }
+};
+
+const renderTransparencyRecords = () => {
+  if (!transparencyTable) return;
+
+  const records = getTransparencyRecords();
+
+  if (!records.length) {
+    transparencyTable.innerHTML = '<tr><td colspan="5">Nenhum registro informado até o momento.</td></tr>';
+    return;
+  }
+
+  transparencyTable.innerHTML = records
+    .map(
+      (record) => `
+        <tr>
+          <td>${escapeHtml(record.period)}</td>
+          <td>${escapeHtml(record.year)}</td>
+          <td>${escapeHtml(record.source)}</td>
+          <td>${escapeHtml(record.amount)}</td>
+          <td>${escapeHtml(record.description || "Sem descrição informada.")}</td>
+        </tr>
+      `
+    )
+    .join("");
+};
+
+if (transparencyForm) {
+  const amountInput = transparencyForm.querySelector("#transparency-amount");
+
+  amountInput.addEventListener("input", () => {
+    amountInput.value = formatCurrency(amountInput.value);
+  });
+
+  transparencyForm.addEventListener("submit", (event) => {
+    event.preventDefault();
+
+    const records = getTransparencyRecords();
+    records.unshift({
+      amount: transparencyForm.querySelector("#transparency-amount").value,
+      description: transparencyForm.querySelector("#transparency-description").value.trim(),
+      period: transparencyForm.querySelector("#transparency-period").value,
+      source: transparencyForm.querySelector("#transparency-source").value,
+      year: transparencyForm.querySelector("#transparency-year").value,
+    });
+
+    localStorage.setItem(transparencyStorageKey, JSON.stringify(records));
+    transparencyForm.reset();
+    transparencyForm.querySelector("#transparency-year").value = new Date().getFullYear();
+    renderTransparencyRecords();
+  });
+
+  renderTransparencyRecords();
 }
