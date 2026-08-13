@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="robots" content="noindex, nofollow" />
+    <title>Admin - Prestação de Contas</title>
+    <link rel="icon" href="../assets/favicon.jpeg" type="image/jpeg" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800;900&family=Poppins:wght@500;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+    <link rel="stylesheet" href="../style.css" />
+  </head>
+  <body class="admin-page">
+    <header class="admin-header">
+      <div class="container admin-header-inner">
+        <a class="brand" href="../index.html#home" aria-label="Voltar ao site">
+          <img src="../images/logo-esperanca-crianca.jpeg" alt="Logotipo A Esperança da Criança" />
+          <span>Associação A Esperança da Criança</span>
+        </a>
+        <a class="btn btn-light" href="../index.html#transparencia"><i class="fa-solid fa-eye"></i> Ver página pública</a>
+      </div>
+    </header>
+
+    <main class="admin-main">
+      <section class="section">
+        <div class="container">
+          <div class="section-heading">
+            <p class="eyebrow">Área administrativa</p>
+            <h1>Prestação de Contas</h1>
+            <p>Gerencie exclusivamente os registros e documentos da Prestação de Contas.</p>
+          </div>
+
+          <section class="admin-login-panel" id="login-panel" aria-label="Acesso administrativo">
+            <form class="admin-card admin-login-form" id="login-form">
+              <label>Senha administrativa
+                <input id="admin-password" type="password" autocomplete="current-password" required />
+              </label>
+              <button class="btn btn-primary" type="submit"><i class="fa-solid fa-lock-open"></i> Entrar</button>
+              <p class="admin-message" id="login-message" role="status"></p>
+            </form>
+          </section>
+
+          <section class="admin-workspace" id="admin-workspace" hidden>
+            <form class="admin-card admin-record-form" id="record-form">
+              <input id="record-id" type="hidden" />
+              <label>Ano
+                <input id="record-year" type="number" min="1900" step="1" required />
+              </label>
+              <label>Bimestre
+                <select id="record-period" required>
+                  <option value="1º Bimestre">1º Bimestre</option>
+                  <option value="2º Bimestre">2º Bimestre</option>
+                  <option value="3º Bimestre">3º Bimestre</option>
+                  <option value="4º Bimestre">4º Bimestre</option>
+                  <option value="5º Bimestre">5º Bimestre</option>
+                  <option value="6º Bimestre">6º Bimestre</option>
+                </select>
+              </label>
+              <label>Origem do recurso
+                <select id="record-source" required>
+                  <option value="Estado">Estado</option>
+                  <option value="Município">Município</option>
+                  <option value="Estado e Município">Estado e Município</option>
+                  <option value="Outros">Outros</option>
+                </select>
+              </label>
+              <label>Valor recebido
+                <input id="record-amount" type="text" placeholder="R$ 0,00" required />
+              </label>
+              <label class="wide-field">Descrição
+                <textarea id="record-description" rows="4" placeholder="Descreva o recurso recebido e sua finalidade"></textarea>
+              </label>
+              <label class="wide-field">Documento
+                <input id="record-document" type="file" accept=".pdf,.jpg,.jpeg,.png,.webp" />
+              </label>
+              <div class="admin-form-actions wide-field">
+                <button class="btn btn-primary" type="submit"><i class="fa-solid fa-floppy-disk"></i> Salvar prestação</button>
+                <button class="btn btn-secondary" id="clear-form" type="button"><i class="fa-solid fa-rotate-left"></i> Limpar</button>
+              </div>
+              <p class="admin-message wide-field" id="form-message" role="status"></p>
+            </form>
+
+            <div class="admin-card admin-list-panel">
+              <div class="admin-toolbar">
+                <label>Ano
+                  <select id="admin-year-filter">
+                    <option value="">Todos</option>
+                  </select>
+                </label>
+                <label>Bimestre
+                  <select id="admin-period-filter">
+                    <option value="">Todos</option>
+                  </select>
+                </label>
+              </div>
+
+              <div class="table-wrap">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Ano</th>
+                      <th>Bimestre</th>
+                      <th>Origem</th>
+                      <th>Valor</th>
+                      <th>Documento</th>
+                      <th>Ações</th>
+                    </tr>
+                  </thead>
+                  <tbody id="admin-records-table">
+                    <tr>
+                      <td colspan="6">Nenhum registro informado até o momento.</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </section>
+        </div>
+      </section>
+    </main>
+
+    <script src="admin.js"></script>
+  </body>
+</html>

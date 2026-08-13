@@ -786,7 +786,12 @@ h3 {
 .contact-form textarea,
 .transparency-form input,
 .transparency-form select,
-.transparency-form textarea {
+.transparency-form textarea,
+.transparency-filter input,
+.transparency-filter select,
+.admin-card input,
+.admin-card select,
+.admin-card textarea {
   border: 1px solid var(--line);
   border-radius: var(--radius);
   display: block;
@@ -802,7 +807,12 @@ h3 {
 .contact-form textarea:focus,
 .transparency-form input:focus,
 .transparency-form select:focus,
-.transparency-form textarea:focus {
+.transparency-form textarea:focus,
+.transparency-filter input:focus,
+.transparency-filter select:focus,
+.admin-card input:focus,
+.admin-card select:focus,
+.admin-card textarea:focus {
   border-color: var(--blue);
   box-shadow: 0 0 0 4px rgba(0, 151, 215, 0.14);
 }
@@ -813,8 +823,15 @@ h3 {
   grid-template-columns: 0.9fr 1.1fr;
 }
 
+.transparency-public {
+  display: grid;
+  gap: 24px;
+}
+
 .transparency-form,
-.transparency-panel {
+.transparency-panel,
+.transparency-filter,
+.admin-card {
   background: var(--white);
   border: 1px solid var(--line);
   border-radius: var(--radius);
@@ -822,19 +839,28 @@ h3 {
   padding: 28px;
 }
 
-.transparency-form {
+.transparency-form,
+.transparency-filter,
+.admin-record-form {
   display: grid;
   gap: 16px;
   grid-template-columns: repeat(2, 1fr);
 }
 
-.transparency-form label {
+.transparency-filter {
+  align-items: end;
+}
+
+.transparency-form label,
+.transparency-filter label,
+.admin-card label {
   color: var(--ink);
   font-weight: 900;
 }
 
 .transparency-form .wide-field,
-.transparency-form button {
+.transparency-form button,
+.admin-record-form .wide-field {
   grid-column: 1 / -1;
 }
 
@@ -866,6 +892,93 @@ h3 {
   color: var(--muted);
   font-size: 0.94rem;
   margin-top: 18px;
+}
+
+.document-link {
+  color: var(--blue-dark);
+  font-weight: 900;
+}
+
+.admin-page {
+  background: var(--soft);
+}
+
+.admin-header {
+  background: linear-gradient(135deg, var(--blue), var(--green));
+  color: var(--white);
+}
+
+.admin-header-inner {
+  align-items: center;
+  display: flex;
+  gap: 24px;
+  justify-content: space-between;
+  min-height: 96px;
+}
+
+.admin-header .brand img {
+  background: var(--white);
+  padding: 4px;
+}
+
+.admin-main {
+  min-height: calc(100vh - 96px);
+}
+
+.admin-login-panel {
+  margin: 0 auto;
+  max-width: 520px;
+}
+
+.admin-login-form {
+  display: grid;
+  gap: 18px;
+}
+
+.admin-workspace {
+  display: grid;
+  gap: 24px;
+  grid-template-columns: 0.86fr 1.14fr;
+}
+
+.admin-form-actions,
+.admin-toolbar,
+.admin-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.admin-toolbar {
+  margin-bottom: 18px;
+}
+
+.admin-toolbar label {
+  flex: 1 1 180px;
+}
+
+.admin-message {
+  color: var(--blue-dark);
+  font-weight: 900;
+}
+
+.btn-icon {
+  align-items: center;
+  background: #eef8ff;
+  border: 1px solid rgba(0, 151, 215, 0.18);
+  border-radius: var(--radius);
+  color: var(--blue-dark);
+  cursor: pointer;
+  display: inline-flex;
+  height: 40px;
+  justify-content: center;
+  width: 40px;
+}
+
+.btn-icon.danger {
+  background: #fff1f2;
+  border-color: rgba(239, 51, 64, 0.22);
+  color: var(--red);
 }
 
 .map-card {
@@ -1020,6 +1133,7 @@ h3 {
   .about-grid,
   .contact-grid,
   .transparency-grid,
+  .admin-workspace,
   .food-showcase {
     grid-template-columns: 1fr;
   }
@@ -1113,8 +1227,17 @@ h3 {
   .workshop-grid,
   .gallery-grid,
   .pix-area,
-  .transparency-form {
+  .transparency-form,
+  .transparency-filter,
+  .admin-record-form {
     grid-template-columns: 1fr;
+  }
+
+  .admin-header-inner {
+    align-items: flex-start;
+    flex-direction: column;
+    padding-bottom: 18px;
+    padding-top: 18px;
   }
 
   .pix-area {
