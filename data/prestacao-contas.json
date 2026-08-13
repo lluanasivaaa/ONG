@@ -1,6 +1,15 @@
 {
   "records": [
     {
+      "amount": "1000",
+      "description": "Teste de cadastro",
+      "documentUrl": "documents/prestacao-contas/1786658642114-teste.pdf",
+      "id": "1786658643576-be4abbd75ce73",
+      "period": "1º Bimestre",
+      "source": "Estado",
+      "year": "2026"
+    },
+    {
       "amount": "R$ 1.000,00",
       "description": "Teste",
       "documentUrl": "",
