@@ -1,6 +1,15 @@
 {
   "records": [
     {
+      "amount": "R$ 15.000,00",
+      "description": "teste",
+      "documentUrl": "documents/prestacao-contas/1786660780783-avaliacao-semestral-gti5na.pdf",
+      "id": "1786660782107-35197e15e23db8",
+      "period": "1º Bimestre",
+      "source": "Município",
+      "year": "2024"
+    },
+    {
       "amount": "2500",
       "description": "Teste de PDF 2024",
       "documentUrl": "documents/prestacao-contas/1786659989133-arquivo.pdf",
