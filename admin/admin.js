@@ -8,8 +8,68 @@ const recordsTable = document.querySelector("#admin-records-table");
 const yearFilter = document.querySelector("#admin-year-filter");
 const periodFilter = document.querySelector("#admin-period-filter");
 const clearFormButton = document.querySelector("#clear-form");
-let adminPassword = sessionStorage.getItem("ong-admin-password") || "";
+let adminPassword = "";
 let records = [];
+
+// Check sessionStorage for authentication state (persistent only during session)
+const getStoredAuth = () => sessionStorage.getItem("adminAuthToken");
+const setStoredAuth = (token) => sessionStorage.setItem("adminAuthToken", token);
+const clearStoredAuth = () => sessionStorage.removeItem("adminAuthToken");
+
+const setAdminView = (isAuthenticated) => {
+  if (!loginPanel || !workspace) return;
+  
+  const blocker = document.getElementById("admin-auth-blocker");
+  
+  if (isAuthenticated) {
+    // SHOW ADMIN WORKSPACE - Remove blocker completely
+    loginPanel.hidden = true;
+    loginPanel.style.display = "none";
+    loginPanel.style.visibility = "hidden";
+    loginPanel.setAttribute("aria-hidden", "true");
+    
+    workspace.hidden = false;
+    workspace.style.display = "grid";
+    workspace.style.visibility = "visible";
+    workspace.setAttribute("aria-hidden", "false");
+    
+    // HIDE blocker using class
+    if (blocker) {
+      blocker.classList.add("hidden");
+      blocker.style.cssText = "display: none !important; visibility: hidden !important; pointer-events: none !important; z-index: -999999 !important;";
+    }
+    
+    // Allow scrolling
+    document.documentElement.style.overflow = "auto";
+    document.body.style.overflow = "auto";
+  } else {
+    // SHOW LOGIN PANEL ONLY - SHOW blocker
+    loginPanel.hidden = false;
+    loginPanel.style.display = "block";
+    loginPanel.style.visibility = "visible";
+    loginPanel.setAttribute("aria-hidden", "false");
+    
+    workspace.hidden = true;
+    workspace.style.display = "none";
+    workspace.style.visibility = "hidden";
+    workspace.setAttribute("aria-hidden", "true");
+    
+    // SHOW blocker using class
+    if (blocker) {
+      blocker.classList.remove("hidden");
+      blocker.style.cssText = "position: fixed !important; top: 0 !important; left: 0 !important; right: 0 !important; bottom: 0 !important; width: 100vw !important; height: 100vh !important; background: #ffffff !important; z-index: 9999999 !important; display: flex !important; align-items: center !important; justify-content: center !important; pointer-events: auto !important;";
+    }
+    
+    // Prevent scrolling
+    document.documentElement.style.overflow = "hidden";
+    document.body.style.overflow = "hidden";
+    
+    // Ensure no data leaks when not authenticated
+    adminPassword = "";
+    records = [];
+    recordsTable.innerHTML = '<tr><td colspan="6">Nenhum registro informado até o momento.</td></tr>';
+  }
+};
 
 const fields = {
   id: document.querySelector("#record-id"),
@@ -38,6 +98,7 @@ const formatCurrency = (value) => {
 const apiFetch = async (url, options = {}) => {
   const response = await fetch(url, {
     ...options,
+    cache: "no-store",
     headers: {
       Authorization: `Bearer ${adminPassword}`,
       ...(options.headers || {}),
@@ -119,7 +180,7 @@ const renderRecords = () => {
           <td>${escapeHtml(record.amount)}</td>
           <td>${
             record.documentUrl
-              ? `<a class="document-link" href="../${escapeHtml(record.documentUrl)}" target="_blank" rel="noopener">Abrir</a>`
+              ? `<a class="document-link" href="/api/documento?path=${encodeURIComponent(record.documentUrl)}" target="_blank" rel="noopener">Abrir</a>`
               : "Não informado"
           }</td>
           <td class="admin-actions">
@@ -140,11 +201,33 @@ const loadRecords = async () => {
 };
 
 const showWorkspace = async () => {
-  loginPanel.hidden = true;
-  workspace.hidden = false;
+  setAdminView(true);
   resetForm();
   await loadRecords();
 };
+
+// SEMPRE mostrar a tela de login ao acessar a página
+// Nunca validar automaticamente um token anterior
+setAdminView(false);
+
+// Adicionar garantia CRÍTICA: se o blocker desaparecer sem autenticação, trazer de volta
+setInterval(() => {
+  const blocker = document.getElementById("admin-auth-blocker");
+  const isLoggedIn = adminPassword && adminPassword.trim() !== "";
+  
+  if (!isLoggedIn && blocker) {
+    // Se não está autenticado, blocker DEVE estar visível
+    if (!blocker.classList.contains("hidden")) {
+      blocker.classList.remove("hidden");
+      blocker.style.cssText = "position: fixed !important; top: 0 !important; left: 0 !important; right: 0 !important; bottom: 0 !important; width: 100vw !important; height: 100vh !important; background: #ffffff !important; z-index: 9999999 !important; display: flex !important; align-items: center !important; justify-content: center !important; pointer-events: auto !important; overflow: hidden !important;";
+    }
+    // Garantir que workspace está escondido
+    if (workspace && (workspace.style.display !== "none" || workspace.hidden === false)) {
+      workspace.style.display = "none";
+      workspace.hidden = true;
+    }
+  }
+}, 100);
 
 loginForm.addEventListener("submit", async (event) => {
   event.preventDefault();
@@ -153,11 +236,30 @@ loginForm.addEventListener("submit", async (event) => {
 
   try {
     await apiFetch("/api/admin-auth", { method: "POST" });
-    sessionStorage.setItem("ong-admin-password", adminPassword);
     loginMessage.textContent = "";
+    
+    // Store auth token in sessionStorage (survives page refresh but not closing the tab)
+    setStoredAuth(adminPassword);
+    
     await showWorkspace();
+    
+    // Double check: remove blocker immediately
+    const blocker = document.getElementById("admin-auth-blocker");
+    if (blocker) {
+      blocker.classList.add("hidden");
+      blocker.style.cssText = "display: none !important; visibility: hidden !important; pointer-events: none !important; z-index: -999999 !important;";
+    }
   } catch (error) {
+    adminPassword = "";
+    clearStoredAuth();
     loginMessage.textContent = error.message;
+    
+    // Double check: ensure blocker is visible on error
+    const blocker = document.getElementById("admin-auth-blocker");
+    if (blocker) {
+      blocker.classList.remove("hidden");
+      blocker.style.cssText = "position: fixed !important; top: 0 !important; left: 0 !important; right: 0 !important; bottom: 0 !important; width: 100vw !important; height: 100vh !important; background: #ffffff !important; z-index: 9999999 !important; display: flex !important; align-items: center !important; justify-content: center !important; pointer-events: auto !important; overflow: hidden !important;";
+    }
   }
 });
 
@@ -231,10 +333,23 @@ fields.amount.addEventListener("input", () => {
   fields.amount.value = formatCurrency(fields.amount.value);
 });
 
-if (adminPassword) {
-  showWorkspace().catch(() => {
-    sessionStorage.removeItem("ong-admin-password");
-    loginPanel.hidden = false;
-    workspace.hidden = true;
+// Logout functionality
+const logoutBtn = document.querySelector("#logout-btn");
+if (logoutBtn) {
+  logoutBtn.addEventListener("click", () => {
+    clearStoredAuth();
+    adminPassword = "";
+    records = [];
+    
+    // Garantir que blocker fica visível
+    const blocker = document.getElementById("admin-auth-blocker");
+    if (blocker) {
+      blocker.classList.remove("hidden");
+      blocker.style.cssText = "position: fixed !important; top: 0 !important; left: 0 !important; right: 0 !important; bottom: 0 !important; width: 100vw !important; height: 100vh !important; background: #ffffff !important; z-index: 9999999 !important; display: flex !important; align-items: center !important; justify-content: center !important; pointer-events: auto !important; overflow: hidden !important;";
+    }
+    
+    setAdminView(false);
+    document.querySelector("#admin-password").value = "";
+    loginMessage.textContent = "Desconectado com sucesso.";
   });
 }

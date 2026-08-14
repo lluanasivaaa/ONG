@@ -184,7 +184,7 @@ const renderTransparencyRecords = () => {
     .map((record) => {
       const documentUrl = getRecordDocument(record);
       const documentLink = documentUrl
-        ? `<a class="document-link" href="${escapeHtml(documentUrl)}" target="_blank" rel="noopener"><i class="fa-solid fa-file-lines"></i> Abrir</a>`
+        ? `<a class="document-link" href="/api/documento?path=${encodeURIComponent(documentUrl)}" target="_blank" rel="noopener"><i class="fa-solid fa-file-lines"></i> Abrir</a>`
         : "Não informado";
 
       return `

@@ -3,6 +3,9 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="0" />
     <meta name="robots" content="noindex, nofollow" />
     <title>Admin - Prestação de Contas</title>
     <link rel="icon" href="../assets/favicon.jpeg" type="image/jpeg" />
@@ -13,6 +16,45 @@
     <link rel="stylesheet" href="../style.css" />
   </head>
   <body class="admin-page">
+    <!-- Overlay bloqueador que impede visualização sem autenticação -->
+    <div id="admin-auth-blocker" style="
+      position: fixed;
+      top: 0 !important;
+      left: 0 !important;
+      right: 0 !important;
+      bottom: 0 !important;
+      width: 100vw !important;
+      height: 100vh !important;
+      background: #ffffff !important;
+      z-index: 9999999 !important;
+      display: flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      pointer-events: auto !important;
+      border: none !important;
+      outline: none !important;
+      margin: 0 !important;
+      padding: 0 !important;
+      overflow: hidden !important;
+    ">
+      <div style="text-align: center;">
+        <p style="
+          font-size: 18px;
+          color: #333;
+          font-family: Arial, sans-serif;
+          margin: 0;
+          padding: 0;
+        ">Área Administrativa</p>
+        <p style="
+          font-size: 14px;
+          color: #666;
+          font-family: Arial, sans-serif;
+          margin: 10px 0 0 0;
+          padding: 0;
+        ">Carregando...</p>
+      </div>
+    </div>
+
     <header class="admin-header">
       <div class="container admin-header-inner">
         <a class="brand" href="../index.html#home" aria-label="Voltar ao site">
@@ -22,6 +64,62 @@
         <a class="btn btn-light" href="../index.html#transparencia"><i class="fa-solid fa-eye"></i> Ver página pública</a>
       </div>
     </header>
+
+    <script>
+      // CRITICAL: Block admin area immediately on page load
+      (function () {
+        // Clear any stored auth on page load - always require fresh password
+        sessionStorage.removeItem("adminAuthToken");
+        
+        const blocker = document.getElementById("admin-auth-blocker");
+        
+        // Make absolutely sure blocker is visible from the start
+        if (blocker) {
+          blocker.classList.remove("hidden");
+          blocker.style.cssText = "position: fixed !important; top: 0 !important; left: 0 !important; right: 0 !important; bottom: 0 !important; width: 100vw !important; height: 100vh !important; background: #ffffff !important; z-index: 9999999 !important; display: flex !important; align-items: center !important; justify-content: center !important; pointer-events: auto !important; overflow: hidden !important;";
+        }
+        
+        // Prevent scroll and other interactions
+        document.documentElement.style.cssText = "height: 100% !important; overflow: hidden !important;";
+        document.body.style.cssText = "height: 100% !important; overflow: hidden !important; width: 100% !important;";
+        
+        const lockAdmin = () => {
+          const loginPanel = document.getElementById("login-panel");
+          const workspace = document.getElementById("admin-workspace");
+          
+          // Ensure blocker is visible
+          if (blocker) {
+            blocker.classList.remove("hidden");
+            blocker.style.cssText = "position: fixed !important; top: 0 !important; left: 0 !important; right: 0 !important; bottom: 0 !important; width: 100vw !important; height: 100vh !important; background: #ffffff !important; z-index: 9999999 !important; display: flex !important; align-items: center !important; justify-content: center !important; pointer-events: auto !important; overflow: hidden !important;";
+          }
+          
+          // Hide workspace completely
+          if (workspace) {
+            workspace.hidden = true;
+            workspace.style.display = "none";
+            workspace.setAttribute("aria-hidden", "true");
+          }
+          
+          // Show login panel
+          if (loginPanel) {
+            loginPanel.hidden = false;
+            loginPanel.style.display = "block";
+          }
+        };
+
+        lockAdmin();
+
+        if (document.readyState === "loading") {
+          document.addEventListener("DOMContentLoaded", lockAdmin, { once: true });
+        }
+
+        window.addEventListener("pageshow", lockAdmin);
+        
+        window.addEventListener("pagehide", () => {
+          sessionStorage.removeItem("adminAuthToken");
+        });
+      })();
+    </script>
 
     <main class="admin-main">
       <section class="section">
@@ -42,7 +140,11 @@
             </form>
           </section>
 
-          <section class="admin-workspace" id="admin-workspace" hidden>
+          <section class="admin-workspace" id="admin-workspace" hidden style="display: none;">
+            <div class="admin-logout-bar">
+              <button class="btn btn-secondary btn-small" id="logout-btn" type="button"><i class="fa-solid fa-sign-out-alt"></i> Sair</button>
+            </div>
+            
             <form class="admin-card admin-record-form" id="record-form">
               <input id="record-id" type="hidden" />
               <label>Ano
@@ -121,6 +223,13 @@
       </section>
     </main>
 
-    <script src="admin.js"></script>
+    <script>
+      (function () {
+        const script = document.createElement("script");
+        script.src = "./admin.js?v=" + Date.now();
+        script.async = false;
+        document.body.appendChild(script);
+      })();
+    </script>
   </body>
 </html>
