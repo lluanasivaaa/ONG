@@ -224,11 +224,25 @@
     </main>
 
     <script>
-      (function () {
-        const script = document.createElement("script");
-        script.src = "./admin.js?v=" + Date.now();
-        script.async = false;
-        document.body.appendChild(script);
+      // Carregar admin.js de forma confiável com fetch
+      (async function () {
+        try {
+          const response = await fetch("./admin.js?v=" + Date.now());
+          if (!response.ok) throw new Error("Falha ao carregar admin.js: " + response.status);
+          const scriptText = await response.text();
+          
+          // Executar o script carregado
+          const script = document.createElement("script");
+          script.textContent = scriptText;
+          document.body.appendChild(script);
+        } catch (error) {
+          console.error("Erro ao carregar admin.js:", error);
+          // Se falhar, tentar com caminho alternativo
+          const script = document.createElement("script");
+          script.src = "/admin/admin.js?v=" + Date.now();
+          script.async = false;
+          document.body.appendChild(script);
+        }
       })();
     </script>
   </body>
